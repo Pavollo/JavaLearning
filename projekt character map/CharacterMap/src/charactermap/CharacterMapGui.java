@@ -7,7 +7,9 @@ package charactermap;
 
 import java.awt.*;
 import javax.swing.*;
-import java.awt.Event.*;
+//import java.awt.Event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  *
@@ -25,6 +27,8 @@ public class CharacterMapGui implements ActionListener {
         ramka = new JFrame("Character Map");
         ramka.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         ramka.getContentPane().setLayout(new BoxLayout(ramka.getContentPane(), BoxLayout.Y_AXIS));
+        ramka.setVisible(true);
+        ramka.setSize(1000, 500);
     }
     
     //utworzenie pola z wynikiem
@@ -41,20 +45,21 @@ public class CharacterMapGui implements ActionListener {
         //adding container
         buttonArea = new JPanel(new GridLayout(10,10));
         ramka.getContentPane().add(buttonArea);
+        buttonArea.setVisible(true);
     }
     
     //uzupelnienie przyciskami do wartosci ascii +33 do i
     public void zbudujGUI(){
         
         int i;
-        znaki = new JButton[95];
+        znaki = new JButton[94];
         
-        for(i=0;i<96;i++){
+        for(i=0;i<94;i++){
             znaki[i] = new JButton();
             buttonArea.add(znaki[i]);
             znaki[i].setVisible(true);
             znaki[i].addActionListener(this);
-            znaki[i].setText(String.valueOf((char)i));
+            znaki[i].setText(String.valueOf((char)(i+33)));
         }
             
     }
@@ -64,14 +69,30 @@ public class CharacterMapGui implements ActionListener {
         Object source = akcja.getSource();
         int i;
         String s;
+        //String s;
         for (i=0;i<96;i++){
             if (source == znaki[i]){
-                wynik.setText(String.valueOf(i));
+                if(CharacterMapEngine.getInstance().getState() == CharacterMapEngine.CharacterMapState.GOTOWY){
+                    CharacterMapEngine.getInstance().setState(CharacterMapEngine.CharacterMapState.POKAZ);
+                    CharacterMapEngine.getInstance().setCharacter((char)(i+33));
+                    CharacterMapEngine.getInstance().setostatniZnak((char)(i+33));
+                    wynik.setText(String.valueOf(i+33));
+                }
+                else if (CharacterMapEngine.getInstance().getState() == CharacterMapEngine.CharacterMapState.POKAZ){
+                    CharacterMapEngine.getInstance().setCharacter((char)(i+33));
+                    if (CharacterMapEngine.getInstance().getCharacter() == CharacterMapEngine.getInstance().getostatniZnak()){
+                        CharacterMapEngine.getInstance().setState(CharacterMapEngine.CharacterMapState.GOTOWY);
+                        //s = String.valueOf(i+33);
+                        wynik.setText(String.valueOf(i+33));
+                        CharacterMapEngine.getInstance().setIO(String.valueOf(i+33));
+                    } else{
+                        CharacterMapEngine.getInstance().setCharacter((char)(i+33));
+                        CharacterMapEngine.getInstance().setCharacter((char)(i+33));
+                        wynik.setText(String.valueOf(i+33));
+                    }
+                }
             }
-            else{
-                wynik.setText("Error");
-                return;
-            }
+            
         }
         
     }
